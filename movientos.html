@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d35400;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a3d 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 84, 0, 0.4);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section h2 {
+            color: #d35400;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 2rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .glosario {
+            display: grid;
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #ff6a3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .funcion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+        }
+
+        .funcion-card h3 {
+            color: #d35400;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-card p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .parametros {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .parametros strong {
+            color: #d35400;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .parametros ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .parametros li {
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff6a3d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .ejemplo-box {
+            background: #fff9f0;
+            border-left: 4px solid #ff9a56;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header, .content-section {
+                padding: 25px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .funcion-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header, .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Movimientos</h1>
+            <p>Aprende a rotar imágenes en diferentes direcciones usando OpenCV</p>
+            <a href="index.html" class="btn-volver">← Volver al inicio</a>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">💻</span>Código del Ejemplo</h2>
+            <div class="code-block">
+                <pre>
+#importar libreria opencv
+import cv2
+
+#guardamos la imagen
+imagen=cv2.imread("gatotito.jpg")
+imgoriginal=imagen.copy()#creo una copia de la imagen original
+
+while True:
+    cv2.imshow("imagen inicial",imagen)
+    tecla=cv2.waitKey(0) #espera infinita hasta la presion de una tecla
+
+    if tecla==ord('d'): #D gira ala derecha
+        imagen=cv2.rotate(imagen,cv2.ROTATE_90_CLOCKWISE)#GIRA 90 GRADOS
+        print("imagen rotando ala derecha")
+    elif tecla==ord('a'): #D gira ala izquierda
+        imagen=cv2.rotate(imagen,cv2.ROTATE_90_CLOCKWISE)
+        print("imagen rotando ala izquierda")
+    elif tecla==ord('w'): #D gira ala
+        imagen=cv2.rotate(imagen,cv2.ROTATE_180)
+    elif tecla==ord('s'): #D gira ala
+        print("Se salio del programa")
+        break
+
+
+
+#muestro la imagen en una ventana
+#cv2.imshow("stolitas",imagen)
+#espero infinitamente la presion de una tecla
+cv2.waitKey(0)
+</pre>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+            <div class="glosario">
+                
+                <div class="funcion-card">
+                    <h3>cv2.imread()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Lee una imagen desde un archivo y la carga en memoria como una matriz NumPy en formato BGR. Esta imagen puede ser manipulada y transformada posteriormente.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>filename</code>: Ruta del archivo de imagen a cargar</li>
+                            <li><code>flags</code>: Modo de lectura (opcional)</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>Matriz NumPy con los datos de la imagen</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>.copy()</h3>
+                    <span class="tag">NumPy</span>
+                    <span class="tag">Python</span>
+                    <p>Crea una copia independiente de la matriz de la imagen. Esto permite mantener la imagen original intacta mientras se realizan modificaciones sobre la copia.</p>
+                    <div class="parametros">
+                        <strong>Uso:</strong>
+                        <div class="ejemplo-box">
+                            imgoriginal = imagen.copy()<br><br>
+                            • Crea una copia profunda (deep copy)<br>
+                            • Los cambios en 'imagen' no afectan 'imgoriginal'<br>
+                            • Útil para comparar o restaurar la imagen original
+                        </div>
+                        <strong>Sin copy():</strong>
+                        <ul>
+                            <li>Solo se crearía una referencia al mismo objeto</li>
+                            <li>Modificar una variable afectaría a la otra</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.rotate()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Rota una imagen en ángulos específicos (90°, 180°, 270°). Es una función optimizada para rotaciones ortogonales comunes.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen de entrada a rotar</li>
+                            <li><code>rotateCode</code>: Código que especifica el tipo de rotación</li>
+                        </ul>
+                        <strong>Códigos de rotación:</strong>
+                        <ul>
+                            <li><code>ROTATE_90_CLOCKWISE</code>: Rota 90° en sentido horario (→)</li>
+                            <li><code>ROTATE_90_COUNTERCLOCKWISE</code>: Rota 90° en sentido antihorario (←)</li>
+                            <li><code>ROTATE_180</code>: Rota 180° (voltea completamente)</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>Imagen rotada según el código especificado</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.ROTATE_90_CLOCKWISE</h3>
+                    <span class="tag">OpenCV</span>
+                    <span class="tag">Constante</span>
+                    <p>Constante que indica una rotación de 90 grados en sentido horario (hacia la derecha). La parte superior de la imagen se mueve hacia la derecha.</p>
+                    <div class="parametros">
+                        <strong>Efecto visual:</strong>
+                        <div class="ejemplo-box">
+                            Antes:  ⬆️<br>
+                            Después: ➡️<br><br>
+                            La imagen gira 90° hacia la derecha
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.ROTATE_180</h3>
+                    <span class="tag">OpenCV</span>
+                    <span class="tag">Constante</span>
+                    <p>Constante que indica una rotación de 180 grados. La imagen se voltea completamente, quedando de cabeza.</p>
+                    <div class="parametros">
+                        <strong>Efecto visual:</strong>
+                        <div class="ejemplo-box">
+                            Antes:  ⬆️<br>
+                            Después: ⬇️<br><br>
+                            La imagen gira 180° (queda invertida)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imshow()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Muestra una imagen en una ventana con un nombre específico. La ventana se actualiza cada vez que se muestra la imagen rotada.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>winname</code>: Nombre de la ventana</li>
+                            <li><code>mat</code>: Imagen a mostrar</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.waitKey()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Espera durante un tiempo especificado (en milisegundos) hasta que se presione una tecla. Retorna el código ASCII de la tecla presionada.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>delay</code>: Tiempo en milisegundos (0 = indefinido)</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>Código ASCII de la tecla presionada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>ord()</h3>
+                    <span class="tag">Python</span>
+                    <p>Función incorporada de Python que convierte un carácter en su código ASCII para comparar con la tecla presionada.</p>
+                    <div class="parametros">
+                        <strong>Controles del programa:</strong>
+                        <div class="ejemplo-box">
+                            <strong>Tecla 'D'</strong> → Rotar a la derecha (90° horario)<br>
+                            <strong>Tecla 'A'</strong> → Rotar a la izquierda (90° horario)*<br>
+                            <strong>Tecla 'W'</strong> → Rotar 180° (voltear)<br>
+                            <strong>Tecla 'S'</strong> → Salir del programa<br><br>
+                            
+                            *Nota: En el código ambos 'D' y 'A' usan ROTATE_90_CLOCKWISE
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>print()</h3>
+                    <span class="tag">Python</span>
+                    <p>Función incorporada que muestra texto en la consola. Útil para dar retroalimentación al usuario sobre las acciones realizadas.</p>
+                    <div class="parametros">
+                        <strong>Uso en el código:</strong>
+                        <ul>
+                            <li>Confirma la acción de rotación realizada</li>
+                            <li>Informa cuando el usuario sale del programa</li>
+                            <li>Ayuda en la depuración del código</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>break</h3>
+                    <span class="tag">Python</span>
+                    <p>Instrucción que termina inmediatamente el bucle while True. Se ejecuta cuando el usuario presiona la tecla 'S' para salir.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Termina la ejecución del bucle infinito</li>
+                            <li>Permite salir del programa de forma controlada</li>
+                            <li>Continúa con el código después del bucle (si existe)</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
