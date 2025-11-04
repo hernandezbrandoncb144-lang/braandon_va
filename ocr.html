@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR - Reconocimiento Óptico de Caracteres</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d35400;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 15px;
+        }
+
+        .definicion {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #ff6a3d;
+        }
+
+        .definicion h3 {
+            color: #d35400;
+            margin-bottom: 10px;
+        }
+
+        .definicion p {
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a3d 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 84, 0, 0.4);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section h2 {
+            color: #d35400;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 2rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .glosario {
+            display: grid;
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #ff6a3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .funcion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+        }
+
+        .funcion-card h3 {
+            color: #d35400;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-card p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .parametros {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .parametros strong {
+            color: #d35400;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .parametros ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .parametros li {
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff6a3d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .ejemplo-box {
+            background: #fff9f0;
+            border-left: 4px solid #ff9a56;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header, .content-section {
+                padding: 25px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .funcion-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header, .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 OCR - Reconocimiento Óptico de Caracteres</h1>
+            <p>Optical Character Recognition - Convierte imágenes de texto en texto editable</p>
+            
+            <div class="definicion">
+                <h3>¿Qué es OCR?</h3>
+                <p><strong>OCR = Optical Character Recognition</strong> (Reconocimiento Óptico de Caracteres)</p>
+                <p><strong>Ejemplos de uso:</strong></p>
+                <ul style="text-align: left; margin: 10px 0 10px 40px; color: #555;">
+                    <li>📄 Foto de un documento</li>
+                    <li>🖨️ Documento escaneado</li>
+                    <li>🧾 Un recibo</li>
+                    <li>🪧 Señal con letras, una foto bien enfocada</li>
+                </ul>
+                <p><strong>¿Qué hace?</strong> Reconoce las formas de las letras y las convierte a texto original editable/copiable</p>
+            </div>
+            
+            <a href="index.html" class="btn-volver">← Volver al inicio</a>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">💻</span>Código del Ejemplo</h2>
+            <div class="code-block">
+                <pre>
+                    '''
+OCR=Optical character recognition / reconocimiento
+optico de caracteres
+por ejemplo=
+-Foto de un documento
+-documento escaneado
+-un recibo
+-señal con letras, una foto bien enfocada
+
+¿Que hace ?= Reconoce las formas de las letras y
+convierte a texto original editable/copiable'''
+#C:\Users\MATUTINO\AppData\Local\Programs\Tesseract-OCR
+
+import cv2 #importar pythoncv para manipular
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd=r"C:\Users\MATUTINO\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+
+#cargar imagen
+
+img_texto=cv2.imread("frasee.jpg")
+#redimenzionar el tamaño de la imagen
+img_final=cv2.resize(img_texto,(800,400))
+
+#convertir a escala de grises
+img_gris=cv2.cvtColor(img_final,cv2.COLOR_BGR2GRAY)
+#SEPARAMOS EL FONDO CON EL TEXTO
+img_res=cv2.threshold(img_gris,120,255,cv2.THRESH_BINARY)[1]
+#devuelve 2 valores lso pixeles y la iamgen procesada
+
+#CONFIGURAR OCR
+texto=pytesseract.image_to_string(img_res,lang='spa')
+#como parametro le pasamops la variable con la imagen procesada y el idioma
+#imprimnimos el titulo
+print("texto detectado")
+print(texto)
+
+cv2.imshow("imagen analizada",img_final)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+                </pre>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+            <div class="glosario">
+                
+                <div class="funcion-card">
+                    <h3>import pytesseract</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Tesseract</span>
+                    <p>Importa la librería Pytesseract, un wrapper de Python para Tesseract-OCR. Tesseract es un motor de OCR de código abierto desarrollado por Google.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>pytesseract.tesseract_cmd</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Configuración</span>
+                    <p>Variable que especifica la ruta del ejecutable de Tesseract-OCR en el sistema. Es necesario configurarla para que Python pueda encontrar el motor OCR.</p>
+                    
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imread()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Lee la imagen que contiene el texto a extraer. Esta imagen será procesada antes de aplicar el OCR.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.resize()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Redimensiona la imagen a un tamaño estándar (800x400). Esto mejora el rendimiento del OCR y estandariza el procesamiento.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.cvtColor()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Convierte la imagen a escala de grises. El OCR funciona mejor con imágenes en blanco y negro porque simplifica la detección de letras.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.threshold()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Aplica umbralización binaria a la imagen. Separa el texto del fondo convirtiendo la imagen en solo dos colores: negro (texto) y blanco (fondo).</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Índice [1]</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Operador</span>
+                    <p>Extrae el segundo elemento de la tupla retornada por threshold(). La función retorna dos valores, pero solo necesitamos la imagen procesada.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>pytesseract.image_to_string()</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">OCR Principal</span>
+                    <p>Función principal de OCR que extrae texto de la imagen procesada. Analiza la imagen y reconoce los caracteres presentes.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Parámetro lang='spa'</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Configuración</span>
+                    <p>Especifica el idioma del texto en la imagen. Mejora significativamente la precisión del reconocimiento al usar el modelo de lenguaje apropiado.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>print()</h3>
+                    <span class="tag">Python</span>
+                    <p>Muestra en consola el texto extraído de la imagen. Permite verificar el resultado del OCR.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imshow()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Muestra la imagen procesada en una ventana. Permite visualizar cómo quedó la imagen después del redimensionado.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.waitKey()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Espera indefinidamente hasta que se presione una tecla. Mantiene la ventana abierta para que el usuario pueda ver la imagen.</p>
+                    
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.destroyAllWindows()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Cierra todas las ventanas abiertas por OpenCV cuando el usuario presiona una tecla. Libera los recursos del sistema.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Cierra todas las ventanas</li>
+                            <li>Libera memoria</li>
+                            <li>Finaliza correctamente el programa</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
