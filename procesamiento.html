@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesamiento de Imagen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d35400;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a3d 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 84, 0, 0.4);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section h2 {
+            color: #d35400;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 2rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .glosario {
+            display: grid;
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #ff6a3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .funcion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+        }
+
+        .funcion-card h3 {
+            color: #d35400;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-card p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .parametros {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .parametros strong {
+            color: #d35400;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .parametros ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .parametros li {
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff6a3d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .ejemplo-box {
+            background: #fff9f0;
+            border-left: 4px solid #ff9a56;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header, .content-section {
+                padding: 25px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .funcion-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header, .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Procesamiento de Imagen</h1>
+            <p>Aplica filtros, efectos y transformaciones avanzadas a imágenes</p>
+            <a href="index.html" class="btn-volver">← Volver al inicio</a>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">💻</span>Código del Ejemplo</h2>
+            <div class="code-block">
+                <pre>
+import cv2
+
+from Coordenadas import recortes
+from Movimiento import movimiento
+from zoom_img import zoom
+
+while True:
+    opcion=int(input("PROCESAMIENTO DE IMAGENES \n 1.Recortar \n 2.Girar \n 3.Zoom \n 4.Salir \n Selecciona una opcion:"))
+
+    if opcion==1:
+        print("Ejecuta el archivo coordenadas")
+        recortes()
+    elif opcion==2:
+        print("Ejecuta el archivo movimientos")
+        movimiento()
+    elif opcion==3:
+        print("Ejecuta el archivo zoom")
+        zoom()
+    elif opcion==4:
+        print("Salir del programa")
+        break</pre>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+            <div class="glosario">
+                
+                <div class="funcion-card">
+                    <h3>import cv2</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Módulo</span>
+                    <p>Importa la librería OpenCV que proporciona herramientas para procesamiento de imágenes y visión artificial. Aunque se importa, en este archivo principal se usa principalmente para coordinar las funciones de los módulos.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Hace disponible OpenCV en el programa</li>
+                            <li>Permite usar funciones como cv2.imread(), cv2.imshow(), etc.</li>
+                            <li>Es la base de todo el procesamiento de imágenes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>from ... import ...</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Importación</span>
+                    <p>Sintaxis para importar funciones específicas desde otros archivos (módulos). Permite organizar el código en archivos separados y reutilizar funciones.</p>
+                    <div class="parametros">
+                        <strong>Importaciones del código:</strong>
+                        <div class="ejemplo-box">
+                            <strong>from Coordenadas import recortes</strong><br>
+                            → Importa función recortes() del archivo Coordenadas.py<br><br>
+                            
+                            <strong>from Movimiento import movimiento</strong><br>
+                            → Importa función movimiento() del archivo Movimiento.py<br><br>
+                            
+                            <strong>from zoom_img import zoom</strong><br>
+                            → Importa función zoom() del archivo zoom_img.py
+                        </div>
+                        <strong>Ventajas:</strong>
+                        <ul>
+                            <li>Organiza código en módulos separados</li>
+                            <li>Reutiliza funciones sin duplicar código</li>
+                            <li>Facilita mantenimiento y legibilidad</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Módulo Coordenadas</h3>
+                    <span class="tag">Módulo Personalizado</span>
+                    <p>Archivo "Coordenadas.py" que contiene la función recortes(). Este módulo maneja el recorte de imágenes usando coordenadas y slicing de arrays.</p>
+                    <div class="parametros">
+                        <strong>Función incluida:</strong>
+                        <ul>
+                            <li><code>recortes()</code>: Permite recortar regiones de imágenes</li>
+                        </ul>
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Recorta imágenes usando coordenadas [y1:y2, x1:x2]</li>
+                            <li>Interacción con teclas A, Y, X</li>
+                            <li>Muestra imagen original y recortada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Módulo Movimiento</h3>
+                    <span class="tag">Módulo Personalizado</span>
+                    <p>Archivo "Movimiento.py" que contiene la función movimiento(). Este módulo maneja la rotación de imágenes en diferentes ángulos.</p>
+                    <div class="parametros">
+                        <strong>Función incluida:</strong>
+                        <ul>
+                            <li><code>movimiento()</code>: Permite rotar imágenes</li>
+                        </ul>
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Rota imágenes 90° a la derecha (tecla D)</li>
+                            <li>Rota imágenes 90° a la izquierda (tecla A)</li>
+                            <li>Rota imágenes 180° (tecla W)</li>
+                            <li>Salir con tecla S</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Módulo zoom_img</h3>
+                    <span class="tag">Módulo Personalizado</span>
+                    <p>Archivo "zoom_img.py" que contiene la función zoom(). Este módulo maneja el acercamiento y alejamiento de imágenes.</p>
+                    <div class="parametros">
+                        <strong>Función incluida:</strong>
+                        <ul>
+                            <li><code>zoom()</code>: Permite ampliar o reducir imágenes</li>
+                        </ul>
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Acerca imagen con tecla +</li>
+                            <li>Aleja imagen con tecla -</li>
+                            <li>Restaura tamaño original con tecla O</li>
+                            <li>Salir con tecla X</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>while True:</h3>
+                    <span class="tag">Python</span>
+                    <p>Bucle infinito que mantiene el menú principal activo hasta que el usuario elija salir. Permite ejecutar múltiples operaciones sin reiniciar el programa.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Muestra el menú repetidamente</li>
+                            <li>Permite ejecutar varias operaciones</li>
+                            <li>Solo termina con break (opción 4)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>input()</h3>
+                    <span class="tag">Python</span>
+                    <p>Función que solicita al usuario que ingrese un valor desde el teclado. En este caso, muestra un menú con las opciones disponibles.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>prompt</code>: Mensaje del menú con todas las opciones</li>
+                        </ul>
+                        <strong>Menú mostrado:</strong>
+                        <div class="ejemplo-box">
+                            PROCESAMIENTO DE IMAGENES<br>
+                            1. Recortar<br>
+                            2. Girar<br>
+                            3. Zoom<br>
+                            4. Salir<br>
+                            Selecciona una opcion:
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>int()</h3>
+                    <span class="tag">Python</span>
+                    <p>Función que convierte un valor a número entero. Se usa para convertir la entrada del usuario (que es texto) en un número que se puede comparar.</p>
+                    <div class="parametros">
+                        <strong>Uso en el código:</strong>
+                        <div class="ejemplo-box">
+                            opcion = int(input(...))<br><br>
+                            • input() retorna "1" (string)<br>
+                            • int() convierte a 1 (número entero)<br>
+                            • Permite comparar: if opcion == 1
+                        </div>
+                        <strong>Importante:</strong>
+                        <ul>
+                            <li>Si el usuario ingresa letras, genera error</li>
+                            <li>Solo acepta números enteros válidos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>if, elif, else</h3>
+                    <span class="tag">Python</span>
+                    <p>Estructuras condicionales que ejecutan diferentes bloques de código según la opción seleccionada por el usuario en el menú.</p>
+                    <div class="parametros">
+                        <strong>Flujo del programa:</strong>
+                        <div class="ejemplo-box">
+                            <strong>if opcion == 1:</strong><br>
+                            &nbsp;&nbsp;→ Ejecuta recortes() 🎯<br><br>
+                            
+                            <strong>elif opcion == 2:</strong><br>
+                            &nbsp;&nbsp;→ Ejecuta movimiento() 🔄<br><br>
+                            
+                            <strong>elif opcion == 3:</strong><br>
+                            &nbsp;&nbsp;→ Ejecuta zoom() 🔍<br><br>
+                            
+                            <strong>elif opcion == 4:</strong><br>
+                            &nbsp;&nbsp;→ Muestra mensaje y sale ❌
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>print()</h3>
+                    <span class="tag">Python</span>
+                    <p>Función que muestra mensajes en la consola para informar al usuario qué operación se está ejecutando.</p>
+                    <div class="parametros">
+                        <strong>Mensajes del programa:</strong>
+                        <ul>
+                            <li>"Ejecuta el archivo coordenadas"</li>
+                            <li>"Ejecuta el archivo movimientos"</li>
+                            <li>"Ejecuta el archivo zoom"</li>
+                            <li>"Salir del programa"</li>
+                        </ul>
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Proporciona retroalimentación al usuario</li>
+                            <li>Confirma la acción seleccionada</li>
+                            <li>Mejora la experiencia de usuario</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>recortes()</h3>
+                    <span class="tag">Función Importada</span>
+                    <p>Función del módulo Coordenadas que ejecuta el programa de recorte de imágenes. Se llama cuando el usuario selecciona la opción 1.</p>
+                    <div class="parametros">
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Carga una imagen</li>
+                            <li>Permite recortar regiones usando coordenadas</li>
+                            <li>Muestra imagen original y recortada</li>
+                            <li>Control interactivo con teclas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>movimiento()</h3>
+                    <span class="tag">Función Importada</span>
+                    <p>Función del módulo Movimiento que ejecuta el programa de rotación de imágenes. Se llama cuando el usuario selecciona la opción 2.</p>
+                    <div class="parametros">
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Carga una imagen</li>
+                            <li>Permite rotar en diferentes ángulos</li>
+                            <li>Rotaciones de 90° y 180°</li>
+                            <li>Control interactivo con teclas D, A, W, S</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>zoom()</h3>
+                    <span class="tag">Función Importada</span>
+                    <p>Función del módulo zoom_img que ejecuta el programa de zoom de imágenes. Se llama cuando el usuario selecciona la opción 3.</p>
+                    <div class="parametros">
+                        <strong>Funcionalidad:</strong>
+                        <ul>
+                            <li>Carga una imagen</li>
+                            <li>Permite acercar y alejar</li>
+                            <li>Factor de zoom ajustable</li>
+                            <li>Control interactivo con teclas +, -, O, X</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>break</h3>
+                    <span class="tag">Python</span>
+                    <p>Instrucción que termina el bucle while True cuando el usuario selecciona la opción 4 (Salir). Finaliza el programa de procesamiento de imágenes.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Detiene el bucle infinito</li>
+                            <li>Termina el programa completamente</li>
+                            <li>Se ejecuta solo con opción 4</li>
+                        </ul>
+                        <strong>Flujo:</strong>
+                        <div class="ejemplo-box">
+                            Usuario selecciona 4<br>
+                            → Muestra "Salir del programa"<br>
+                            → break ejecuta<br>
+                            → Termina el while True<br>
+                            → Programa finaliza
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
