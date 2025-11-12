@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Placas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d35400;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a3d 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 84, 0, 0.4);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section h2 {
+            color: #d35400;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 2rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .glosario {
+            display: grid;
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #ff6a3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .funcion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+        }
+
+        .funcion-card h3 {
+            color: #d35400;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-card p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .parametros {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .parametros strong {
+            color: #d35400;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .parametros ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .parametros li {
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff6a3d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .ejemplo-box {
+            background: #fff9f0;
+            border-left: 4px solid #ff9a56;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header, .content-section {
+                padding: 25px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .funcion-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header, .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 OCR Placas</h1>
+            <p>Sistema de reconocimiento de placas vehiculares para control de acceso</p>
+            <a href="index.html" class="btn-volver">← Volver al inicio</a>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">💻</span>Código del Ejemplo</h2>
+            <div class="code-block">
+                <pre>
+import cv2
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd=r"C:\Users\MATUTINO\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+
+#Listas de platas aceptadas en el estacionaiento del CBTIS144
+placas_autorizadas=["XYZ7892","DMB-123","BPB-543","QWE987","DLP876"]
+
+#carga la imagebn
+placa=cv2.imread("placas.jpg")
+placanueva=cv2.resize(placa,(800,300))
+
+placa_gris=cv2.cvtColor(placanueva,cv2.COLOR_BGR2GRAY)
+
+img_res=cv2.threshold(placa_gris,120,255,cv2.THRESH_BINARY)[1]
+
+texto_placa=pytesseract.image_to_string(img_res,lang='spa')
+
+#Limpiar la cadena de texto
+texto_limpio=texto_placa.strip().replace("","")
+
+#buscar la placa en la lista autorizada
+if texto_limpio in placas_autorizadas:
+    print("ACCESO PERMITIDO!!\n Bienvenido al estacionamiento del CBTIS144")
+else:
+    print("ACCESO DENEGADO \n No puedes acceder al estacionamiento")
+
+#imprimnimos el titulo
+print("texto placa")
+print(texto_placa)
+
+cv2.imshow("imagen analizada",placa)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+                </pre>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+            <div class="glosario">
+                
+                <div class="funcion-card">
+                    <h3>import cv2 y pytesseract</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">OpenCV</span>
+                    <span class="tag">Tesseract</span>
+                    <p>Importa las librerías necesarias: OpenCV para procesamiento de imágenes y Pytesseract para el reconocimiento óptico de caracteres (OCR).</p>
+                    <div class="parametros">
+                        <strong>Librerías:</strong>
+                        <ul>
+                            <li><code>cv2</code>: Procesamiento y manipulación de imágenes</li>
+                            <li><code>pytesseract</code>: Extracción de texto de imágenes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>pytesseract.tesseract_cmd</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Configuración</span>
+                    <p>Configura la ruta del ejecutable de Tesseract-OCR. Necesario para que Python pueda usar el motor de reconocimiento de texto.</p>
+                    <div class="parametros">
+                        <strong>Configuración:</strong>
+                        <div class="ejemplo-box">
+                            pytesseract.pytesseract.tesseract_cmd = r"ruta\tesseract.exe"
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>placas_autorizadas</h3>
+                    <span class="tag">Lista</span>
+                    <span class="tag">Base de Datos</span>
+                    <p>Lista que funciona como base de datos de placas autorizadas para acceder al estacionamiento del CBTIS144. Contiene las matrículas permitidas.</p>
+                    <div class="parametros">
+                        <strong>Placas registradas:</strong>
+                        <div class="ejemplo-box">
+                            ["XYZ7892", "DMB-123", "BPB-543", "QWE987", "DLP876"]
+                        </div>
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Almacena placas con acceso autorizado</li>
+                            <li>Se usa para validar el acceso</li>
+                            <li>Simula una base de datos de seguridad</li>
+                            <li>Fácil de actualizar agregando o quitando placas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imread()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Lee la imagen que contiene la placa vehicular a reconocer. Esta imagen será procesada para extraer el texto de la matrícula.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>filename</code>: "placas.jpg" - Imagen de la placa</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>Matriz NumPy con la imagen de la placa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.resize()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Redimensiona la imagen de la placa a un tamaño estándar (800x300). Estandariza el tamaño para mejorar el reconocimiento OCR.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen original de la placa</li>
+                            <li><code>dsize</code>: (800, 300) - Tamaño optimizado para placas</li>
+                        </ul>
+                        <strong>Por qué 800x300:</strong>
+                        <ul>
+                            <li>Proporción adecuada para placas vehiculares</li>
+                            <li>Mejora la legibilidad de los caracteres</li>
+                            <li>Optimiza el procesamiento OCR</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.cvtColor()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Convierte la imagen de la placa a escala de grises. Elimina el color para facilitar el reconocimiento de caracteres.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen redimensionada de la placa</li>
+                            <li><code>code</code>: cv2.COLOR_BGR2GRAY - Conversión a gris</li>
+                        </ul>
+                        <strong>Ventajas para placas:</strong>
+                        <ul>
+                            <li>Elimina variaciones de color</li>
+                            <li>Mejora contraste entre texto y fondo</li>
+                            <li>Facilita la binarización posterior</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.threshold()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Aplica umbralización binaria para separar los caracteres de la placa del fondo. Convierte la imagen en blanco y negro puro para mejorar el OCR.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen en escala de grises</li>
+                            <li><code>thresh</code>: 120 - Valor de umbral</li>
+                            <li><code>maxval</code>: 255 - Valor máximo (blanco)</li>
+                            <li><code>type</code>: cv2.THRESH_BINARY - Umbralización binaria</li>
+                        </ul>
+                        <strong>Resultado:</strong>
+                        <div class="ejemplo-box">
+                            Caracteres de la placa → Negro (0)<br>
+                            Fondo de la placa → Blanco (255)<br>
+                            o viceversa, dependiendo del contraste
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>pytesseract.image_to_string()</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">OCR</span>
+                    <p>Extrae el texto de la placa procesada. Lee los caracteres y números de la matrícula vehicular.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>image</code>: Imagen binarizada de la placa</li>
+                            <li><code>lang</code>: 'spa' - Idioma español</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>String con el texto reconocido de la placa</li>
+                            <li>Ejemplo: "XYZ7892" o "DMB-123"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>.strip()</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Método String</span>
+                    <p>Elimina espacios en blanco al inicio y final del texto extraído. Limpia el resultado del OCR para una comparación precisa.</p>
+                    <div class="parametros">
+                        <strong>Ejemplo:</strong>
+                        <div class="ejemplo-box">
+                            " XYZ7892 ".strip() → "XYZ7892"<br>
+                            "  DMB-123  ".strip() → "DMB-123"
+                        </div>
+                        <strong>Por qué es importante:</strong>
+                        <ul>
+                            <li>OCR puede detectar espacios extras</li>
+                            <li>Asegura comparación exacta con la lista</li>
+                            <li>Evita rechazos por espacios</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>.replace()</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Método String</span>
+                    <p>Reemplaza caracteres o espacios no deseados en el texto. En este código, intenta limpiar caracteres erróneos que el OCR pueda detectar.</p>
+                    <div class="parametros">
+                        <strong>Sintaxis:</strong>
+                        <div class="ejemplo-box">
+                            texto.replace(viejo, nuevo)<br><br>
+                            
+                            texto_placa.replace(" ", "")<br>
+                            → Elimina todos los espacios
+                        </div>
+                        <strong>Nota en el código:</strong>
+                        <ul>
+                            <li>replace("","") no hace cambios (strings vacíos)</li>
+                            <li>Podría usarse: replace(" ", "") para quitar espacios</li>
+                            <li>O replace("\n", "") para quitar saltos de línea</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Operador 'in'</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Operador</span>
+                    <p>Verifica si la placa reconocida está en la lista de placas autorizadas. Determina si se permite o deniega el acceso.</p>
+                    <div class="parametros">
+                        <strong>Funcionamiento:</strong>
+                        <div class="ejemplo-box">
+                            if texto_limpio in placas_autorizadas:<br><br>
+                            
+                            Ejemplo 1:<br>
+                            texto_limpio = "XYZ7892"<br>
+                            "XYZ7892" in ["XYZ7892", "DMB-123", ...]<br>
+                            → True → ACCESO PERMITIDO ✅<br><br>
+                            
+                            Ejemplo 2:<br>
+                            texto_limpio = "ABC9999"<br>
+                            "ABC9999" in ["XYZ7892", "DMB-123", ...]<br>
+                            → False → ACCESO DENEGADO ❌
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>if, else</h3>
+                    <span class="tag">Python</span>
+                    <p>Estructura condicional que controla el acceso al estacionamiento según si la placa está autorizada o no.</p>
+                    <div class="parametros">
+                        <strong>Lógica de acceso:</strong>
+                        <div class="ejemplo-box">
+                            <strong>if texto_limpio in placas_autorizadas:</strong><br>
+                            &nbsp;&nbsp;→ ACCESO PERMITIDO!! ✅<br>
+                            &nbsp;&nbsp;→ Bienvenido al estacionamiento del CBTIS144<br><br>
+                            
+                            <strong>else:</strong><br>
+                            &nbsp;&nbsp;→ ACCESO DENEGADO ❌<br>
+                            &nbsp;&nbsp;→ No puedes acceder al estacionamiento
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>print()</h3>
+                    <span class="tag">Python</span>
+                    <p>Muestra mensajes en consola para informar el resultado de la verificación y el texto detectado.</p>
+                    <div class="parametros">
+                        <strong>Mensajes del sistema:</strong>
+                        <ul>
+                            <li>Mensaje de acceso (permitido o denegado)</li>
+                            <li>"texto placa" - Etiqueta informativa</li>
+                            <li>Texto extraído de la placa</li>
+                        </ul>
+                        <strong>Uso de \n:</strong>
+                        <ul>
+                            <li>\n crea un salto de línea</li>
+                            <li>Mejora la presentación de mensajes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imshow()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Muestra la imagen original de la placa en una ventana. Permite al usuario ver qué imagen fue analizada.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>winname</code>: "imagen analizada"</li>
+                            <li><code>mat</code>: placa (imagen original sin procesar)</li>
+                        </ul>
+                        <strong>Nota:</strong>
+                        <ul>
+                            <li>Muestra la imagen original, no la procesada</li>
+                            <li>Permite verificar visualmente la placa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.waitKey() y cv2.destroyAllWindows()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Funciones para controlar la ventana de visualización. waitKey(0) espera indefinidamente y destroyAllWindows() cierra las ventanas.</p>
+                    <div class="parametros">
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>waitKey(0): Mantiene ventana abierta hasta presionar tecla</li>
+                            <li>destroyAllWindows(): Cierra todas las ventanas al terminar</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

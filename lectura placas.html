@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lectura de Placas - CBTIS144</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #d35400;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: #666;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .content-section {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-section h2 {
+      color: #d35400;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .icon {
+      font-size: 2rem;
+    }
+
+    .code-block {
+      background: #2d2d2d;
+      border-radius: 15px;
+      padding: 25px;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .code-block pre {
+      margin: 0;
+      color: #f8f8f2;
+      font-family: "Courier New", monospace;
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      line-height: 1.6;
+    }
+
+    .keyword {
+      color: #ff79c6;
+    }
+
+    .string {
+      color: #f1fa8c;
+    }
+
+    .function {
+      color: #50fa7b;
+    }
+
+    .comment {
+      color: #6272a4;
+      font-style: italic;
+    }
+
+    .number {
+      color: #bd93f9;
+    }
+
+    .glosario {
+      display: grid;
+      gap: 20px;
+    }
+
+    .funcion-card {
+      background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+      border-radius: 12px;
+      padding: 25px;
+      border-left: 5px solid #ff6a3d;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .funcion-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+    }
+
+    .funcion-card h3 {
+      color: #d35400;
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-family: "Courier New", monospace;
+    }
+
+    .funcion-card p {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .parametros {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    .parametros strong {
+      color: #d35400;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .parametros ul {
+      margin-left: 20px;
+      color: #666;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #ff6a3d;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+
+    .ejemplo-box {
+      background: #fff9f0;
+      border-left: 4px solid #ff9a56;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      color: #555;
+    }
+
+    .note {
+      background: #fff9f0;
+      border-left: 4px solid #ff9a56;
+      padding: 15px;
+      border-radius: 8px;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚗 Lectura de Placas - CBTIS144</h1>
+      <p>Sistema de control de acceso mediante OCR de placas vehiculares</p>
+    </div>
+
+    <div class="content-section">
+      <h2><span class="icon">💻</span>Código del Proyecto</h2>
+      <div class="code-block">
+        <pre>
+import cv2
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\MATUTINO\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+
+# Lista de placas autorizadas en el estacionamiento del CBTIS144
+placas_autorizadas = ["XYZ7892", "DMB-123", "BPB-543", "QWE987", "DLP876", "NEG0150", "BLP-9346"]
+
+
+def procesar_placa(ruta_imagen, nombre_placa):
+    """
+    Procesa una imagen de placa y verifica si está autorizada
+    """
+    print(f"\n{'=' * 60}")
+    print(f"Procesando {nombre_placa}...")
+    print('=' * 60)
+
+    # Cargar la imagen
+    placa = cv2.imread(ruta_imagen)
+
+    if placa is None:
+        print(f"ERROR: No se pudo cargar la imagen {ruta_imagen}")
+        return None
+
+    # Redimensionar la imagen
+    placa_nueva = cv2.resize(placa, (800, 300))
+
+    # Convertir a escala de grises
+    placa_gris = cv2.cvtColor(placa_nueva, cv2.COLOR_BGR2GRAY)
+
+    # Aplicar umbral
+    img_res = cv2.threshold(placa_gris, 120, 255, cv2.THRESH_BINARY)[1]
+
+    # Extraer texto de la placa
+    texto_placa = pytesseract.image_to_string(img_res, lang='spa')
+
+    # Limpiar la cadena de texto
+    texto_limpio = texto_placa.strip().replace(" ", "").replace("\n", "")
+
+    # Mostrar texto extraído
+    print(f"\nTexto extraído de {nombre_placa}: {texto_placa}")
+    print(f"Texto limpio: {texto_limpio}")
+
+    # Buscar la placa en la lista autorizada
+    if texto_limpio in placas_autorizadas:
+        print(f"\n✓ ACCESO PERMITIDO!!")
+        print(f"  Bienvenido al estacionamiento del CBTIS144")
+        print(f"  Placa registrada: {texto_limpio}")
+    else:
+        print(f"\n✗ ACCESO DENEGADO")
+        print(f"  No puedes acceder al estacionamiento")
+        print(f"  Placa no autorizada: {texto_limpio}")
+
+    # Mostrar la imagen analizada
+    cv2.imshow(f"Imagen analizada - {nombre_placa}", placa_nueva)
+
+    return texto_limpio
+
+
+# ===== PROGRAMA PRINCIPAL =====
+print("\n" + "=" * 60)
+print("SISTEMA DE CONTROL DE ACCESO - ESTACIONAMIENTO CBTIS144")
+print("=" * 60)
+
+# Cargar y procesar las dos imágenes de placas
+placa1_texto = procesar_placa("placa1.jpg", "PLACA 1")
+placa2_texto = procesar_placa("placa2.jpg", "PLACA 2")
+
+# Resumen final
+print(f"\n{'=' * 60}")
+print("RESUMEN DE PROCESAMIENTO")
+print('=' * 60)
+
+placas_procesadas = []
+if placa1_texto:
+    placas_procesadas.append(("PLACA 1", placa1_texto))
+if placa2_texto:
+    placas_procesadas.append(("PLACA 2", placa2_texto))
+
+print(f"\nTotal de placas procesadas: {len(placas_procesadas)}")
+print(f"Placas leídas:")
+for nombre, texto in placas_procesadas:
+    estado = "✓ AUTORIZADA" if texto in placas_autorizadas else "✗ NO AUTORIZADA"
+    print(f"  - {nombre}: {texto} - {estado}")
+
+# Mostrar placas restantes (no escaneadas)
+print(f"\nPlacas autorizadas restantes (no escaneadas):")
+placas_escaneadas = [p[1] for p in placas_procesadas]
+placas_restantes = [p for p in placas_autorizadas if p not in placas_escaneadas]
+if placas_restantes:
+    for placa in placas_restantes:
+        print(f"  - {placa}")
+else:
+    print("  Todas las placas autorizadas fueron escaneadas")
+
+print("\nPresiona cualquier tecla para cerrar las ventanas...")
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+        </pre>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+      <div class="glosario">
+        <div class="funcion-card">
+          <h3>cv2.imread()</h3>
+          <p>Lee una imagen desde un archivo y la carga en memoria como matriz de píxeles.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>cv2.resize()</h3>
+          <p>Redimensiona la imagen a un tamaño estándar (800x300) para mejorar el reconocimiento de texto.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>cv2.cvtColor()</h3>
+          <p>Convierte la imagen a escala de grises eliminando los colores que no son útiles para el OCR.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>cv2.threshold()</h3>
+          <p>Aplica un umbral binario que deja la imagen en blanco y negro, facilitando que Tesseract lea los caracteres.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>pytesseract.image_to_string()</h3>
+          <p>Extrae el texto que aparece en la imagen procesada usando el motor OCR de Tesseract.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>.strip()</h3>
+          <p>Elimina espacios en blanco o saltos de línea al principio y al final del texto reconocido.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>.replace()</h3>
+          <p>Reemplaza caracteres o espacios innecesarios dentro del texto detectado por el OCR.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>if / else</h3>
+          <p>Controla si el texto leído (la placa) está en la lista de placas autorizadas y muestra el mensaje correspondiente.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>cv2.imshow()</h3>
+          <p>Muestra en una ventana la imagen procesada para visualizar la placa analizada.</p>
+        </div>
+
+        <div class="funcion-card">
+          <h3>cv2.waitKey() y cv2.destroyAllWindows()</h3>
+          <p>cv2.waitKey(0) mantiene las ventanas abiertas hasta que se presiona una tecla y cv2.destroyAllWindows() las cierra todas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
