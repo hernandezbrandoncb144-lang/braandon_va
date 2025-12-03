@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lectura de Placas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d35400;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a3d 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 84, 0, 0.4);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section h2 {
+            color: #d35400;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 2rem;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 25px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        .glosario {
+            display: grid;
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #ff6a3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .funcion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.2);
+        }
+
+        .funcion-card h3 {
+            color: #d35400;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-card p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .parametros {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .parametros strong {
+            color: #d35400;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .parametros ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .parametros li {
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff6a3d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .ejemplo-box {
+            background: #fff9f0;
+            border-left: 4px solid #ff9a56;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header, .content-section {
+                padding: 25px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .funcion-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header, .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Lectura de Placas 2</h1>
+            <p>Sistema avanzado de detección y lectura de placas vehiculares con preprocesamiento mejorado</p>
+            <a href="index.html" class="btn-volver">← Volver al inicio</a>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">💻</span>Código del Ejemplo</h2>
+            <div class="code-block">
+                <pre>
+import cv2
+import pytesseract
+
+# Ruta correcta del ejecutable
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\MATUTINO\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+
+# 1. Cargar imagen
+img = cv2.imread("placas_colombia_mesa_de_trabajo_1.jpg")
+
+# 2. Obtener tamaño
+alto, ancho, _ = img.shape
+
+# 3. Zona del recorte (letras grandes)
+y1 = int(alto * 0.25)
+y2 = int(alto * 0.75)
+x1 = int(ancho * 0.15)
+x2 = int(ancho * 0.95)
+recorte = img[y1:y2, x1:x2]
+
+# --- PREPROCESAMIENTO MEJORADO ---
+gris = cv2.cvtColor(recorte, cv2.COLOR_BGR2GRAY)
+gris = cv2.convertScaleAbs(gris, alpha=2.0, beta=0)
+blur = cv2.GaussianBlur(gris, (5, 5), 0)
+_, binaria = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+binaria_grande = cv2.resize(binaria, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+# OCR con whitelist y modo simple
+config = r'--psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+texto = pytesseract.image_to_string(binaria_grande, config=config)
+
+# Limpiar texto
+placa = texto.strip().replace(" ", "").replace("\n", "")
+
+print("Placa detectada:", placa)
+
+# Mostrar resultados
+cv2.imshow("Recorte", recorte)
+cv2.imshow("Binaria", binaria)
+cv2.imshow("Binaria Grande", binaria_grande)
+cv2.waitKey(0)
+</pre>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2><span class="icon">📚</span>Glosario de Funciones</h2>
+            <div class="glosario">
+                
+                <div class="funcion-card">
+                    <h3>cv2.imread()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Carga la imagen que contiene la placa vehicular. Esta imagen será procesada mediante múltiples técnicas de preprocesamiento para mejorar la precisión del OCR.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>filename</code>: "placas_colombia_mesa_de_trabajo_1.jpg"</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>Matriz NumPy con la imagen en formato BGR</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>.shape</h3>
+                    <span class="tag">NumPy</span>
+                    <span class="tag">Atributo</span>
+                    <p>Atributo que retorna las dimensiones de la imagen (alto, ancho, canales). Se usa para calcular la zona de recorte de forma proporcional.</p>
+                    <div class="parametros">
+                        <strong>Retorna tupla:</strong>
+                        <div class="ejemplo-box">
+                            alto, ancho, _ = img.shape<br><br>
+                            
+                            • alto: Número de filas (altura en píxeles)<br>
+                            • ancho: Número de columnas (ancho en píxeles)<br>
+                            • _: Número de canales (3 para BGR, se ignora)
+                        </div>
+                        <strong>Ejemplo:</strong>
+                        <ul>
+                            <li>Imagen 800x600: shape = (600, 800, 3)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>int()</h3>
+                    <span class="tag">Python</span>
+                    <p>Convierte valores flotantes a enteros. Se usa para calcular las coordenadas de recorte como porcentajes de la imagen.</p>
+                    <div class="parametros">
+                        <strong>Cálculo de zona de recorte:</strong>
+                        <div class="ejemplo-box">
+                            <strong>Coordenadas verticales (Y):</strong><br>
+                            y1 = int(alto * 0.25) → 25% desde arriba<br>
+                            y2 = int(alto * 0.75) → 75% desde arriba<br>
+                            → Recorta el 50% central vertical<br><br>
+                            
+                            <strong>Coordenadas horizontales (X):</strong><br>
+                            x1 = int(ancho * 0.15) → 15% desde la izquierda<br>
+                            x2 = int(ancho * 0.95) → 95% desde la izquierda<br>
+                            → Recorta el 80% central horizontal
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>Slicing [y1:y2, x1:x2]</h3>
+                    <span class="tag">NumPy</span>
+                    <span class="tag">Operador</span>
+                    <p>Recorta la región de interés de la imagen donde se encuentra la placa. Elimina bordes y fondo innecesarios para mejorar el OCR.</p>
+                    <div class="parametros">
+                        <strong>Sintaxis:</strong>
+                        <div class="ejemplo-box">
+                            recorte = img[y1:y2, x1:x2]<br><br>
+                            
+                            • [y1:y2] → Filas (altura)<br>
+                            • [x1:x2] → Columnas (ancho)<br>
+                            • Extrae solo la zona central de la placa
+                        </div>
+                        <strong>Ventajas:</strong>
+                        <ul>
+                            <li>Reduce área de procesamiento</li>
+                            <li>Elimina ruido del fondo</li>
+                            <li>Enfoca en los caracteres de la placa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.cvtColor()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Convierte la imagen recortada a escala de grises. Primer paso del preprocesamiento para simplificar la imagen.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Recorte de la imagen</li>
+                            <li><code>code</code>: cv2.COLOR_BGR2GRAY</li>
+                        </ul>
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Elimina información de color</li>
+                            <li>Reduce de 3 canales a 1 canal</li>
+                            <li>Facilita procesamiento posterior</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.convertScaleAbs()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Ajusta el contraste y brillo de la imagen. Mejora la visibilidad de los caracteres de la placa antes del OCR.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen en escala de grises</li>
+                            <li><code>alpha</code>: 2.0 - Factor de contraste</li>
+                            <li><code>beta</code>: 0 - Ajuste de brillo</li>
+                        </ul>
+                        <strong>Fórmula:</strong>
+                        <div class="ejemplo-box">
+                            nuevo_pixel = alpha * pixel_original + beta<br><br>
+                            
+                            alpha = 2.0 → Duplica el contraste<br>
+                            beta = 0 → Sin cambio de brillo<br>
+                            → Caracteres más definidos
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.GaussianBlur()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Aplica un desenfoque gaussiano para reducir el ruido de la imagen. Suaviza la imagen antes de la binarización.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen con contraste mejorado</li>
+                            <li><code>ksize</code>: (5, 5) - Tamaño del kernel</li>
+                            <li><code>sigmaX</code>: 0 - Desviación estándar (auto)</li>
+                        </ul>
+                        <strong>Función:</strong>
+                        <div class="ejemplo-box">
+                            Kernel (5,5):<br>
+                            → Aplica desenfoque en área de 5x5 píxeles<br>
+                            → Elimina ruido y manchas pequeñas<br>
+                            → Prepara imagen para umbralización
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.threshold() con THRESH_OTSU</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Aplica umbralización automática usando el método de Otsu. Separa automáticamente los caracteres del fondo sin necesidad de especificar un umbral manual.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen desenfocada</li>
+                            <li><code>thresh</code>: 0 (Otsu calcula automáticamente)</li>
+                            <li><code>maxval</code>: 255 - Valor máximo</li>
+                            <li><code>type</code>: THRESH_BINARY_INV + THRESH_OTSU</li>
+                        </ul>
+                        <strong>THRESH_BINARY_INV:</strong>
+                        <div class="ejemplo-box">
+                            • Invierte los colores<br>
+                            • Caracteres → Blanco (255)<br>
+                            • Fondo → Negro (0)<br>
+                            • Mejor para OCR
+                        </div>
+                        <strong>THRESH_OTSU:</strong>
+                        <ul>
+                            <li>Calcula umbral óptimo automáticamente</li>
+                            <li>Analiza histograma de la imagen</li>
+                            <li>No requiere ajuste manual</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.resize() con INTER_CUBIC</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Amplía la imagen binarizada al doble de su tamaño usando interpolación cúbica. Mejora la precisión del OCR al proporcionar más píxeles para analizar.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>src</code>: Imagen binarizada</li>
+                            <li><code>dsize</code>: None (usa factores de escala)</li>
+                            <li><code>fx</code>: 2 - Duplica ancho</li>
+                            <li><code>fy</code>: 2 - Duplica alto</li>
+                            <li><code>interpolation</code>: INTER_CUBIC</li>
+                        </ul>
+                        <strong>INTER_CUBIC:</strong>
+                        <div class="ejemplo-box">
+                            • Interpolación bicúbica (alta calidad)<br>
+                            • Mejor para ampliar imágenes<br>
+                            • Bordes más suaves y definidos<br>
+                            • Mejora detección de caracteres pequeños
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>config OCR</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Configuración</span>
+                    <p>Cadena de configuración que optimiza Tesseract específicamente para placas vehiculares. Mejora precisión restringiendo caracteres permitidos.</p>
+                    <div class="parametros">
+                        <strong>Parámetros de configuración:</strong>
+                        <div class="ejemplo-box">
+                            <strong>--psm 7</strong><br>
+                            → Page Segmentation Mode 7<br>
+                            → Trata la imagen como una sola línea de texto<br>
+                            → Ideal para placas (texto horizontal)<br><br>
+                            
+                            <strong>-c tessedit_char_whitelist=...</strong><br>
+                            → Whitelist (lista blanca)<br>
+                            → Solo reconoce: A-Z y 0-9<br>
+                            → Ignora símbolos, puntuación, acentos<br>
+                            → Reduce errores de reconocimiento
+                        </div>
+                        <strong>Ventajas:</strong>
+                        <ul>
+                            <li>Mayor precisión en placas</li>
+                            <li>Evita confusión con símbolos</li>
+                            <li>Optimizado para texto corto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>--psm 7</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Parámetro</span>
+                    <p>Page Segmentation Mode 7: Trata la imagen como una sola línea de texto. Perfecto para placas que son texto horizontal continuo.</p>
+                    <div class="parametros">
+                        <strong>Modos PSM comunes:</strong>
+                        <div class="ejemplo-box">
+                            PSM 3: Automático (por defecto)<br>
+                            PSM 6: Bloque uniforme de texto<br>
+                            <strong>PSM 7: Línea única de texto ✓</strong><br>
+                            PSM 8: Palabra única<br>
+                            PSM 10: Carácter único
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>tessedit_char_whitelist</h3>
+                    <span class="tag">Tesseract</span>
+                    <span class="tag">Configuración</span>
+                    <p>Restringe los caracteres que Tesseract puede reconocer. Solo permite letras mayúsculas y números, típicos en placas vehiculares.</p>
+                    <div class="parametros">
+                        <strong>Whitelist definida:</strong>
+                        <div class="ejemplo-box">
+                            ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<br><br>
+                            
+                            ✓ Permite: ABC123, XYZ789<br>
+                            ✗ Ignora: áéíóú, !@#$%, abc (minúsculas)
+                        </div>
+                        <strong>Beneficios:</strong>
+                        <ul>
+                            <li>Evita confundir 'O' con '0'</li>
+                            <li>Ignora símbolos que no están en placas</li>
+                            <li>Aumenta velocidad de reconocimiento</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>pytesseract.image_to_string()</h3>
+                    <span class="tag">Tesseract</span>
+                    <p>Extrae el texto de la imagen procesada usando la configuración optimizada. Función principal del OCR.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>image</code>: binaria_grande (imagen preprocesada)</li>
+                            <li><code>config</code>: Configuración personalizada con psm y whitelist</li>
+                        </ul>
+                        <strong>Retorna:</strong>
+                        <ul>
+                            <li>String con el texto detectado en la placa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>.strip().replace()</h3>
+                    <span class="tag">Python</span>
+                    <span class="tag">Método String</span>
+                    <p>Cadena de métodos que limpia el texto extraído. Elimina espacios, saltos de línea y otros caracteres no deseados.</p>
+                    <div class="parametros">
+                        <strong>Proceso de limpieza:</strong>
+                        <div class="ejemplo-box">
+                            Texto OCR: " ABC 123 \n"<br><br>
+                            
+                            .strip()<br>
+                            → "ABC 123 \n" (sin espacios externos)<br><br>
+                            
+                            .replace(" ", "")<br>
+                            → "ABC123\n" (sin espacios internos)<br><br>
+                            
+                            .replace("\n", "")<br>
+                            → "ABC123" (sin saltos de línea)<br><br>
+                            
+                            <strong>Resultado final: ABC123</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>print()</h3>
+                    <span class="tag">Python</span>
+                    <p>Muestra en consola la placa detectada después de todo el procesamiento y limpieza.</p>
+                    <div class="parametros">
+                        <strong>Salida:</strong>
+                        <div class="ejemplo-box">
+                            print("Placa detectada:", placa)<br>
+                            → Placa detectada: ABC123
+                        </div>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.imshow() múltiples ventanas</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Muestra tres ventanas diferentes para visualizar el proceso de transformación de la imagen en cada etapa.</p>
+                    <div class="parametros">
+                        <strong>Ventanas mostradas:</strong>
+                        <div class="ejemplo-box">
+                            <strong>1. "Recorte"</strong><br>
+                            → Región de interés extraída<br>
+                            → Imagen a color sin procesar<br><br>
+                            
+                            <strong>2. "Binaria"</strong><br>
+                            → Imagen binarizada (blanco/negro)<br>
+                            → Después de umbralización<br><br>
+                            
+                            <strong>3. "Binaria Grande"</strong><br>
+                            → Imagen ampliada 2x<br>
+                            → Lista para OCR
+                        </div>
+                        <strong>Función:</strong>
+                        <ul>
+                            <li>Permite ver el proceso completo</li>
+                            <li>Ayuda a depurar problemas</li>
+                            <li>Compara resultados de cada etapa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcion-card">
+                    <h3>cv2.waitKey()</h3>
+                    <span class="tag">OpenCV</span>
+                    <p>Mantiene las tres ventanas abiertas hasta que el usuario presione cualquier tecla. Permite examinar los resultados del procesamiento.</p>
+                    <div class="parametros">
+                        <strong>Parámetros:</strong>
+                        <ul>
+                            <li><code>delay</code>: 0 (espera indefinida)</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
